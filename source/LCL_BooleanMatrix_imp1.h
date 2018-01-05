@@ -10,8 +10,21 @@ using namespace LCL_ConsoleOut;
 
 template <int N, int M>
 LCL_BooleanMatrix<N,M>::LCL_BooleanMatrix() {
-    for(int i = 0; i < _r; i++) {
-        for(int j = 0; j < _c; j++) {
+    r = 0;
+    c = 0;
+    for(int i = 0; i < r; i++) {
+        for(int j = 0; j < c; j++) {
+            data[i][j]=0;
+        }
+    }
+}
+
+template <int N, int M>
+LCL_BooleanMatrix<N,M>::LCL_BooleanMatrix(int in_r, int in_c) {
+    r = in_r;
+    c = in_c;
+    for(int i = 0; i < r; i++) {
+        for(int j = 0; j < c; j++) {
             data[i][j]=0;
         }
     }
@@ -20,7 +33,7 @@ LCL_BooleanMatrix<N,M>::LCL_BooleanMatrix() {
 template <int N, int M>
 bool LCL_BooleanMatrix<N,M>::operator()(int i ,int j) const {
     bool out = 0;
-    if((i>=0) && (i<_r) && (j>=0)&&(j<_c)) {
+    if((i>=0) && (i<r) && (j>=0)&&(j<c)) {
         out = data[i][j];
     } else {
         error("Index out of bounds.", "operator()", "LCL_BooleanMatrix");
@@ -30,7 +43,7 @@ bool LCL_BooleanMatrix<N,M>::operator()(int i ,int j) const {
 
 template <int N, int M>
 bool& LCL_BooleanMatrix<N,M>::operator()(int i ,int j) {
-    if((i>=0) && (i<_r) && (j>=0)&&(j<_c)) {
+    if((i>=0) && (i<r) && (j>=0)&&(j<c)) {
         return data[i][j];
     } else {
         error("Index out of bounds.", "operator()", "LCL_BooleanMatrix");
@@ -40,19 +53,9 @@ bool& LCL_BooleanMatrix<N,M>::operator()(int i ,int j) {
 }
 
 template <int N, int M>
-int LCL_BooleanMatrix<N,M>::r() const {
-    return _r;
-}
-
-template <int N, int M>
-int LCL_BooleanMatrix<N,M>::c() const {
-    return _c;
-}
-
-template <int N, int M>
 void LCL_BooleanMatrix<N,M>::print(ostream& in_OS) const {
-    for(int i = 0; i < _r; i++) {
-        for(int j = 0; j < _c; j++) {
+    for(int i = 0; i < r; i++) {
+        for(int j = 0; j < c; j++) {
             in_OS << data[i][j] << " ";
         }
         in_OS << endl;
@@ -64,9 +67,11 @@ LCL_BooleanMatrix<N,M> LCL_BooleanMatrix<N,M>::operator+(const LCL_BooleanMatrix
     LCL_BooleanMatrix<N,M> out;
 
     // Output only defined if operand dimensions match.
-    if((_r==in_Mat.r())&&(_c==in_Mat.c())) {
-        for(int i = 0; i < _r; i++) {
-            for(int j = 0; j < _c; j++) {
+    if((r==in_Mat.r)&&(c==in_Mat.c)) {
+        out.r = r;
+        out.c = c;
+        for(int i = 0; i < out.r; i++) {
+            for(int j = 0; j < out.c; j++) {
                 out(i,j) = operator()(i,j)^in_Mat(i,j);
             }
         }
@@ -79,9 +84,9 @@ LCL_BooleanMatrix<N,M> LCL_BooleanMatrix<N,M>::operator+(const LCL_BooleanMatrix
 
 template <int N, int M>
 LCL_BooleanMatrix<N,M>& LCL_BooleanMatrix<N,M>::operator+=(const LCL_BooleanMatrix& in_Mat) {
-    if((_r==in_Mat.r())&&(_c==in_Mat.c())) {
-        for(int i = 0; i < _r; i++) {
-            for(int j = 0; j < _c; j++) {
+    if((r==in_Mat.r)&&(c==in_Mat.c)) {
+        for(int i = 0; i < r; i++) {
+            for(int j = 0; j < c; j++) {
                 operator()(i,j) ^= in_Mat(i,j);
             }
         }
@@ -90,4 +95,26 @@ LCL_BooleanMatrix<N,M>& LCL_BooleanMatrix<N,M>::operator+=(const LCL_BooleanMatr
     }
 
     return (*this);
+}
+
+template <int N, int M>
+LCL_BooleanMatrix<N,M> LCL_BooleanMatrix<N,M>::operator*(const LCL_BooleanMatrix& in_Mat) const {
+    LCL_BooleanMatrix<N,M> out;
+
+    // Output only defined if inner dimensions match.
+    if(c==in_Mat.r) {
+        out.r = r;
+        out.c = in_Mat.c;
+        for(int i = 0; i < out.r; i++) {
+            for(int j = 0; j < out.c; j++) {
+                for(int k = 0; k < c; k++) {
+                    out(i,j) ^= operator()(i,k)&in_Mat(k,j);
+                }
+            }
+        }
+    } else {
+        LCL_ConsoleOut::warning("Operand dimensions must match.", "operator*", "LCL_BooleanMatrix");
+    }
+
+    return out;
 }
