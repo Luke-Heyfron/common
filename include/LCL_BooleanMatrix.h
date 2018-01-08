@@ -6,13 +6,15 @@ using namespace std;
 
 #include <ostream>
 
+#include "LCL_BoundedInt.h"
+
 // N and M are max number of rows and columns,respectively. Actual number of rows and columns _r and _c may be less.
 
 template <int N, int M>
 class LCL_BooleanMatrix {
     public:
-        int r;  //Change these to type LCL_BoundedInt
-        int c;
+        LCL_BoundedInt r;  //Change these to type LCL_BoundedInt
+        LCL_BoundedInt c;
     private:
         bool data[N][M];
     public:
@@ -48,5 +50,9 @@ class LCL_BooleanMatrix {
 const int LCL_SMALL = 1E1;
 const int LCL_MEDIUM = 1E2;
 const int LCL_LARGE = 1E3;
+
+// External variables
+
+extern bool LCL_BOOLEAN_MATRIX_DUMMY;
 
 #endif // LCL_BOOLEAN_MATRIX_HEADER
