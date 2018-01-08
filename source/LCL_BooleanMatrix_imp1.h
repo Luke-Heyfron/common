@@ -8,10 +8,15 @@ using namespace std;
 #include "LCL_ConsoleOut.h"
 using namespace LCL_ConsoleOut;
 
+bool LCL_BOOLEAN_MATRIX_DUMMY = 0;
+
 template <int N, int M>
 LCL_BooleanMatrix<N,M>::LCL_BooleanMatrix() {
+    r(0,N-1);
+    c(0,M-1);
     r = 0;
     c = 0;
+
     for(int i = 0; i < r; i++) {
         for(int j = 0; j < c; j++) {
             data[i][j]=0;
@@ -21,6 +26,8 @@ LCL_BooleanMatrix<N,M>::LCL_BooleanMatrix() {
 
 template <int N, int M>
 LCL_BooleanMatrix<N,M>::LCL_BooleanMatrix(int in_r, int in_c) {
+    r(0,N-1);
+    c(0,M-1);
     r = in_r;
     c = in_c;
     for(int i = 0; i < r; i++) {
@@ -33,7 +40,7 @@ LCL_BooleanMatrix<N,M>::LCL_BooleanMatrix(int in_r, int in_c) {
 template <int N, int M>
 bool LCL_BooleanMatrix<N,M>::operator()(int i ,int j) const {
     bool out = 0;
-    if((i>=0) && (i<r) && (j>=0)&&(j<c)) {
+    if((i>=0) && (i<r) && (j>=0) && (j<c) &&(i<N) && (j<M)) {
         out = data[i][j];
     } else {
         error("Index out of bounds.", "operator()", "LCL_BooleanMatrix");
@@ -43,12 +50,11 @@ bool LCL_BooleanMatrix<N,M>::operator()(int i ,int j) const {
 
 template <int N, int M>
 bool& LCL_BooleanMatrix<N,M>::operator()(int i ,int j) {
-    if((i>=0) && (i<r) && (j>=0)&&(j<c)) {
+    if((i>=0) && (i<r) && (j>=0)&&(j<c) &&(i<N) && (j<M)) {
         return data[i][j];
     } else {
         error("Index out of bounds.", "operator()", "LCL_BooleanMatrix");
-        bool dummy = 0;
-        return dummy;
+        return LCL_BOOLEAN_MATRIX_DUMMY;
     }
 }
 
